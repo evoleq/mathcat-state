@@ -31,7 +31,7 @@ interface ScopedSuspendedState<S, T> : ScopedSuspended<S, Pair<T, S>> {
 @Suppress("FunctionName")
 @MathCatDsl
 fun <S, T> ScopedSuspendedState(state: suspend CoroutineScope.(S)->Pair<T, S>): ScopedSuspendedState<S, T> = object : ScopedSuspendedState<S, T> {
-    override val function: suspend CoroutineScope.(S) -> Pair<T, S>
+    override val morphism: suspend CoroutineScope.(S) -> Pair<T, S>
         get() = state
 
 }
@@ -48,7 +48,7 @@ interface KlScopedSuspendedState<B, S, T> : ScopedSuspended<S, ScopedSuspendedSt
 
 @Suppress("FunctionName")
 fun<B, S, T>  KlScopedSuspendedState(arrow: suspend CoroutineScope.(S)-> ScopedSuspendedState<B, T>): KlScopedSuspendedState<B, S, T> = object : KlScopedSuspendedState<B, S, T> {
-    override val function: suspend CoroutineScope.(S) -> ScopedSuspendedState<B, T>
+    override val morphism: suspend CoroutineScope.(S) -> ScopedSuspendedState<B, T>
         get() = arrow
 }
 
