@@ -17,8 +17,8 @@ package org.evoleq.math.cat.suspend.monad.state
 
 import kotlinx.coroutines.CoroutineScope
 import org.evoleq.math.cat.marker.MathCatDsl
-import org.evoleq.math.cat.suspend.morhism.ScopedSuspended
-import org.evoleq.math.cat.suspend.morhism.by
+import org.evoleq.math.cat.suspend.morphism.ScopedSuspended
+import org.evoleq.math.cat.suspend.morphism.by
 
 
 interface ScopedSuspendedState<S, T> : ScopedSuspended<S, Pair<T, S>> {
