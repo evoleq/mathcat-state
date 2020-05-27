@@ -35,7 +35,11 @@ fun <S, T> ScopedSuspendedState(state: suspend CoroutineScope.(S)->Pair<T, S>): 
         get() = state
 
 }
-
+@Suppress("FunctionName")
+@MathCatDsl
+fun <S, T> ReturnState(t: T): ScopedSuspendedState<S, T> = ScopedSuspendedState {
+    s -> Pair(t,s)
+}
 
 
 fun <S, T> ScopedSuspendedState<S, ScopedSuspendedState<S, T>>.multiply() : ScopedSuspendedState<S, T> = ScopedSuspendedState {
@@ -50,6 +54,12 @@ interface KlScopedSuspendedState<B, S, T> : ScopedSuspended<S, ScopedSuspendedSt
 fun<B, S, T>  KlScopedSuspendedState(arrow: suspend CoroutineScope.(S)-> ScopedSuspendedState<B, T>): KlScopedSuspendedState<B, S, T> = object : KlScopedSuspendedState<B, S, T> {
     override val morphism: suspend CoroutineScope.(S) -> ScopedSuspendedState<B, T>
         get() = arrow
+}
+
+@Suppress("FunctionName")
+@MathCatDsl
+fun <B, S> KlReturnState(): KlScopedSuspendedState<B, S, S> = KlScopedSuspendedState {
+    s -> ReturnState(s)
 }
 
 suspend operator fun <B, R, S, T> KlScopedSuspendedState<B, R, S>.times(other: KlScopedSuspendedState<B, S, T>): KlScopedSuspendedState<B, R, T> =
