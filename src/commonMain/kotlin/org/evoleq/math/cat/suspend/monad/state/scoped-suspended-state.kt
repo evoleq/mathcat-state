@@ -22,11 +22,13 @@ import org.evoleq.math.cat.suspend.morphism.by
 
 
 interface ScopedSuspendedState<S, T> : ScopedSuspended<S, Pair<T, S>> {
-    suspend fun <T1> map(f: suspend CoroutineScope.(T) -> T1): ScopedSuspendedState<S, T1> = ScopedSuspendedState {
+    suspend infix fun <T1> map(f: suspend CoroutineScope.(T) -> T1): ScopedSuspendedState<S, T1> = ScopedSuspendedState {
             s -> with(by(this@ScopedSuspendedState)(s)){
-        Pair(f(first),second)
+            Pair(f(first),second)
+        }
     }
-    }
+    
+    suspend fun <U> bind(arrow: suspend CoroutineScope.(T)->ScopedSuspendedState<S, U>): ScopedSuspendedState<S, U> = (this map arrow).multiply()
 }
 @Suppress("FunctionName")
 @MathCatDsl
@@ -41,7 +43,7 @@ fun <S, T> ReturnState(t: T): ScopedSuspendedState<S, T> = ScopedSuspendedState 
     s -> Pair(t,s)
 }
 
-
+@MathCatDsl
 fun <S, T> ScopedSuspendedState<S, ScopedSuspendedState<S, T>>.multiply() : ScopedSuspendedState<S, T> = ScopedSuspendedState {
         s -> with(by(this@multiply)(s)){
     by(first)(second)
@@ -50,6 +52,7 @@ fun <S, T> ScopedSuspendedState<S, ScopedSuspendedState<S, T>>.multiply() : Scop
 
 interface KlScopedSuspendedState<B, S, T> : ScopedSuspended<S, ScopedSuspendedState<B, T>>
 
+@MathCatDsl
 @Suppress("FunctionName")
 fun<B, S, T>  KlScopedSuspendedState(arrow: suspend CoroutineScope.(S)-> ScopedSuspendedState<B, T>): KlScopedSuspendedState<B, S, T> = object : KlScopedSuspendedState<B, S, T> {
     override val morphism: suspend CoroutineScope.(S) -> ScopedSuspendedState<B, T>
