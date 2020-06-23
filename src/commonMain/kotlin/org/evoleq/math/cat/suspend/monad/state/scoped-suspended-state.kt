@@ -18,8 +18,8 @@ package org.evoleq.math.cat.suspend.monad.state
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
 import org.evoleq.math.cat.marker.MathCatDsl
-import org.evoleq.math.cat.suspend.morphism.ScopedSuspended
-import org.evoleq.math.cat.suspend.morphism.by
+import org.evoleq.math.cat.structure.x
+import org.evoleq.math.cat.suspend.morphism.*
 
 /**
  * Scoped suspended state
@@ -41,11 +41,12 @@ fun <S, T> ScopedSuspendedState(state: suspend CoroutineScope.(S)->Pair<T, S>): 
  * Functorial structure
  *
  **********************************************************************************************************************/
+/**
+ * Map [ScopedSuspendedState]
+ */
 @MathCatDsl
 suspend infix fun <S, T, T1> ScopedSuspendedState<S, T>.map(f: suspend CoroutineScope.(T) -> T1): ScopedSuspendedState<S, T1> = ScopedSuspendedState {
-    s -> with(by(this@map)(s)){
-        Pair(f(first), second)
-    }
+    s ->  ((f x by(Id<S>())) o by(this@map))(s)
 }
 
 /**********************************************************************************************************************
@@ -98,10 +99,7 @@ fun <S, T> ReturnState(t: T): ScopedSuspendedState<S, T> = ScopedSuspendedState 
  */
 @MathCatDsl
 fun <S, T> ScopedSuspendedState<S, ScopedSuspendedState<S, T>>.multiply() : ScopedSuspendedState<S, T> =
-    ScopedSuspendedState { s -> with(by(this@multiply)(s)){
-        by(first)(second)
-    }
-}
+    ScopedSuspendedState { s -> by(this@multiply)(s).evaluate() }
 
 /**
  * Bind function of the [ScopedSuspendedState] monad
