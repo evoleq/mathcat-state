@@ -59,15 +59,8 @@ suspend infix fun <S, T, T1> ScopedSuspendedState<S, T>.map(f: suspend Coroutine
  * Apply function of the applicative [ScopedSuspendedState]
  */
 @MathCatDsl
-suspend fun <R, S, T> ScopedSuspendedState<R, suspend CoroutineScope.(S)->T>.apply()
-    : suspend CoroutineScope.(ScopedSuspendedState<R, S>)->ScopedSuspendedState<R, T> = {
-    stateS -> ScopedSuspendedState{ r: R ->
-        val  pR = by(stateS)(r)
-        val pF = by(this@apply)(pR.second)
-        with(pF.first) {
-            Pair(this(pR.first), pF.second)
-        }
-    }
+suspend fun <R, S, T> ScopedSuspendedState<R, suspend CoroutineScope.(S)->T>.apply(): suspend CoroutineScope.(ScopedSuspendedState<R, S>)->ScopedSuspendedState<R, T> = {
+    state -> this@apply bind {f -> state map f}
 }
 
 /**
@@ -105,7 +98,7 @@ fun <S, T> ScopedSuspendedState<S, ScopedSuspendedState<S, T>>.multiply() : Scop
  * Bind function of the [ScopedSuspendedState] monad
  */
 @MathCatDsl
-suspend fun <S, T, U> ScopedSuspendedState<S, T>.bind(
+suspend infix fun <S, T, U> ScopedSuspendedState<S, T>.bind(
     arrow: suspend CoroutineScope.(T)->ScopedSuspendedState<S, U>
 ): ScopedSuspendedState<S, U> = (this map arrow).multiply()
 
