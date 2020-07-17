@@ -106,15 +106,7 @@ suspend infix fun <S, T, U> ScopedSuspendedState<S, T>.bind(
  * Kleisli [ScopedSuspendedState]
  */
 interface KlScopedSuspendedState<B, S, T> : ScopedSuspended<S, ScopedSuspendedState<B, T>> {
-    /**
-     * [KlScopedSuspendedState] is functorial, i.e. for fixed S, I the map T -> KlScopedSuspendedState<S, I T> is a functor.
-     * This is true because this map is just a composition Hom_i ° State<S, _> of the hom- and the state-functor
-     */
-    @MathCatDsl
-    suspend infix fun <S, I, O1, O2> KlScopedSuspendedState<S, I, O1>.map(f: suspend CoroutineScope.(O1)->O2): KlScopedSuspendedState<S, I , O2> =
-        KlScopedSuspendedState {
-            input -> by(this@map)(input) map f
-        }
+
 }
 
 /**
@@ -126,6 +118,16 @@ fun<B, S, T>  KlScopedSuspendedState(arrow: suspend CoroutineScope.(S)-> ScopedS
     override val morphism: suspend CoroutineScope.(S) -> ScopedSuspendedState<B, T>
         get() = arrow
 }
+
+/**
+ * [KlScopedSuspendedState] is functorial, i.e. for fixed S, I the map T -> KlScopedSuspendedState<S, I T> is a functor.
+ * This is true because this map is just a composition Hom_i ° State<S, _> of the hom- and the state-functor
+ */
+@MathCatDsl
+suspend infix fun <S, I, O1, O2> KlScopedSuspendedState<S, I, O1>.map(f: suspend CoroutineScope.(O1)->O2): KlScopedSuspendedState<S, I , O2> =
+    KlScopedSuspendedState {
+        input -> by(this@map)(input) map f
+    }
 
 /**
  * Identity element of the [ScopedSuspendedState] monad
