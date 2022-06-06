@@ -21,6 +21,9 @@ import org.evoleq.math.cat.marker.MathCatDsl
 import org.evoleq.math.cat.structure.x
 import org.evoleq.math.cat.suspend.morphism.*
 
+typealias State<S, T> = ScopedSuspendedState<S, T>
+typealias KlState<B, S, T> = KlScopedSuspendedState<B, S, T>
+
 /**
  * Scoped suspended state
  */
