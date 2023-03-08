@@ -10,3 +10,6 @@ import org.evoleq.math.cat.morphism.by
  */
 @MathCatDsl
 fun <S, T> Pair<Morphism<S, T>,S>.evaluate(): T = by(first)(second)
+
+@MathCatDsl
+infix fun <S, T> State<S, T>.runOn( input: S ): Pair<T, S> = Pair(this, input).evaluate()

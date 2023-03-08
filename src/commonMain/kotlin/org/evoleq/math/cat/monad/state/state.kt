@@ -48,7 +48,7 @@ fun <S, T> State(state: (S)->Pair<T, S>): State<S, T> = object : State<S, T> {
  */
 @MathCatDsl
 infix fun <S, T, T1> State<S, T>.map(f: (T) -> T1): State<S, T1> = State {
-        s ->  ((f x by(Id<S>())) o by(this@map))(s)
+        s:S ->  ((f x by(Id<S>())) o by(this@map))(s)
 }
 
 /**********************************************************************************************************************
@@ -62,7 +62,7 @@ infix fun <S, T, T1> State<S, T>.map(f: (T) -> T1): State<S, T1> = State {
  */
 @MathCatDsl
 fun <R, S, T> State<R, (S)->T>.apply(): (State<R, S>)->State<R, T> = {
-        state -> this@apply bind {f -> state map f}
+        state -> this@apply bind { f -> state map f }
 }
 
 /**
@@ -128,7 +128,7 @@ fun<B, S, T>  KlState(arrow: (S)-> State<B, T>): KlState<B, S, T> = object : KlS
 @MathCatDsl
 infix fun <S, I, O1, O2> KlState<S, I, O1>.map(f: (O1)->O2): KlState<S, I , O2> =
     KlState {
-            input -> by(this@map)(input) map f
+        input -> by(this@map)(input) map f
     }
 
 /**
@@ -145,5 +145,5 @@ fun <B, S> KlReturnState(): KlState<B, S, S> = KlState {
  */
 operator fun <B, R, S, T> KlState<B, R, S>.times(other: KlState<B, S, T>): KlState<B, R, T> =
     KlState {
-            r -> by(this@times)(r).map(by(other)).multiply()
+        r -> by(this@times)(r).map(by(other)).multiply()
     }
